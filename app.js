@@ -548,12 +548,14 @@ async function askQuestion() {
         const simClass = overallSimilarity >= 0.70 ? 'similarity-high'
             : overallSimilarity >= 0.40 ? 'similarity-mid' : 'similarity-low';
 
+        const renderedAnswer = marked.parse(answer);
+
         let html = `<div class="result-card rag-answer rag-${simClass}">
             <div class="result-card-header">
                 <div class="result-title">AI Answer</div>
                 ${overallBadge}
             </div>
-            <div class="result-sentences">${escapeHtml(answer)}</div>
+            <div class="result-sentences markdown-body">${renderedAnswer}</div>
         </div>`;
 
         // Show source talks with per-talk similarity badges and links

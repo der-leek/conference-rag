@@ -559,6 +559,37 @@ input:focus {
     padding: var(--spacing-sm) var(--spacing-md);
 }
 
+/* Styling for Markdown Content */
+.markdown-body {
+    line-height: 1.6;
+    word-wrap: break-word;
+}
+
+.markdown-body p {
+    margin-bottom: 16px;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+    padding-left: 2em;
+    margin-bottom: 16px;
+}
+
+.markdown-body code {
+    background-color: rgba(175, 184, 193, 0.2);
+    padding: 0.2em 0.4em;
+    border-radius: 6px;
+    font-family: monospace;
+}
+
+.markdown-body pre {
+    background-color: #f6f8fa;
+    padding: 16px;
+    border-radius: 8px;
+    overflow: auto;
+    margin-bottom: 16px;
+}
+
 /* Color-tinted RAG answer cards based on similarity */
 .result-card.rag-similarity-high {
     border-color: var(--success);
