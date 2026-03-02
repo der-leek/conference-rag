@@ -29,14 +29,14 @@ from supabase import create_client
 from tqdm import tqdm
 
 
-INPUT_FILE = os.path.join('scripts', 'output', 'sentences_with_embeddings.json')
+INPUT_FILE = os.path.join("scripts", "output", "sentences_with_embeddings.json")
 BATCH_SIZE = 100
 
 
 def load_config():
-    with open('config.public.json', 'r') as f:
+    with open("config.public.json", "r") as f:
         public_config = json.load(f)
-    with open('config.secret.json', 'r') as f:
+    with open("config.secret.json", "r") as f:
         secrets = json.load(f)
     return public_config, secrets
 
@@ -48,11 +48,11 @@ def main():
 
     # Load embedded records
     print("Loading embeddings data...")
-    with open(INPUT_FILE, 'r', encoding='utf-8') as f:
+    with open(INPUT_FILE, "r", encoding="utf-8") as f:
         records = json.load(f)
 
     # Verify embeddings are present
-    with_embeddings = sum(1 for r in records if r.get('embedding'))
+    with_embeddings = sum(1 for r in records if r.get("embedding"))
     without_embeddings = len(records) - with_embeddings
 
     print(f"   Loaded {len(records):,} records")
@@ -62,7 +62,7 @@ def main():
 
     # Connect to Supabase
     public_config, secrets = load_config()
-    client = create_client(public_config['SUPABASE_URL'], secrets['SUPABASE_SERVICE_KEY'])
+    client = create_client(public_config["SUPABASE_URL"], secrets["SUPABASE_SERVICE_KEY"])
 
     # Truncate existing data and re-import everything
     print("\n" + "=" * 60)
@@ -70,11 +70,18 @@ def main():
     print("=" * 60)
 
     try:
-        result = client.table('sentence_embeddings').select('id', count='exact').limit(1).execute()
+        result = (
+            client.table("sentence_embeddings")
+            .select("id", count="exact")
+            .limit(1)
+            .execute()
+        )
         existing_count = result.count or 0
         if existing_count > 0:
             print(f"   Truncating {existing_count:,} existing rows...")
-            client.table('sentence_embeddings').delete().neq('id', '00000000-0000-0000-0000-000000000000').execute()
+            client.table("sentence_embeddings").delete().neq(
+                "id", "00000000-0000-0000-0000-000000000000"
+            ).execute()
             print("   ✅ Table truncated.")
         else:
             print("   Table is empty — ready for import.")
@@ -89,9 +96,9 @@ def main():
     errors = 0
 
     for i in tqdm(range(0, len(records), BATCH_SIZE), desc="Importing"):
-        batch = records[i:i + BATCH_SIZE]
+        batch = records[i : i + BATCH_SIZE]
         try:
-            client.table('sentence_embeddings').insert(batch).execute()
+            client.table("sentence_embeddings").insert(batch).execute()
             success += len(batch)
         except Exception as e:
             print(f"\nError at batch {i // BATCH_SIZE}: {e}")
@@ -104,13 +111,18 @@ def main():
         print(f"   Errors:  {errors:,}")
 
     # Verify
-    result = client.table('sentence_embeddings').select('id', count='exact').limit(1).execute()
+    result = (
+        client.table("sentence_embeddings").select("id", count="exact").limit(1).execute()
+    )
     total = result.count or 0
 
-    embedded_result = client.table('sentence_embeddings') \
-        .select('id', count='exact') \
-        .not_('embedding', 'is', 'null') \
-        .limit(1).execute()
+    embedded_result = (
+        client.table("sentence_embeddings")
+        .select("id", count="exact")
+        .not_.is_("embedding", "null")
+        .limit(1)
+        .execute()
+    )
     with_emb = embedded_result.count or 0
 
     print(f"\n   Total rows:          {total:,}")
@@ -121,5 +133,5 @@ def main():
     print(f"\nNext: Deploy edge functions to light up 🤖 RAG!")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

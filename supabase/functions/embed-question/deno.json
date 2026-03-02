@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "deno.worker",
+            "deno.ns"
+        ]
+    },
+    "imports": {
+        "@supabase/supabase-js": "npm:@supabase/supabase-js@2"
+    }
+}

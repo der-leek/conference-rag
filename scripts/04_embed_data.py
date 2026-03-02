@@ -1,7 +1,7 @@
 """
 Step 4: Generate Embeddings
 ===============================
-Reads scripts/output/sentences.json and generates OpenAI embeddings
+Reads scripts/output/sentences.json and generates Gemini embeddings
 for each sentence. Saves the result to scripts/output/sentences_with_embeddings.json.
 
 This is the most expensive step (~$0.60 in API costs). The output is
@@ -17,7 +17,7 @@ Output:
     scripts/output/sentences_with_embeddings.json  — sentence records with embedding vectors
 
 Prerequisites:
-    - config.secret.json with OPENAI_API_KEY
+    - config.secret.json with GEMINI_API_KEY
     - scripts/output/sentences.json from the import step
 """
 
@@ -94,9 +94,11 @@ def main():
                 ),
             )
 
-            for record, item in zip(batch, response.data):
+            time.sleep(1)  # to avoid hitting rate limit
+
+            for record, item in zip(batch, response.embeddings):
                 record_with_embedding = dict(record)
-                record_with_embedding["embedding"] = item.embedding
+                record_with_embedding["embedding"] = item.values
                 embedded_records.append(record_with_embedding)
 
         except Exception as e:
